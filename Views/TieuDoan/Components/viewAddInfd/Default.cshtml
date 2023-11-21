@@ -1,0 +1,143 @@
+﻿@{
+    // trang nay de cho viewAddInf
+            //
+    //
+            //
+}
+
+
+@{
+    var listchuvu = ViewData["TT_ChuVu"] as List<ChucVu>;
+    var listdonvi = ViewData["TT_DonVi"] as List<DonVi>;
+    var listloaiQN = ViewData["TT_LoaiQN"] as List<LoaiQuanNhan>;
+    
+}
+
+<div class="content-wrapper" style="min-height: 1302.32px;">
+
+    <section class="content">
+        <div class="container-fluid">
+            <div class="row">
+                <!-- left column -->
+
+
+                <div class="col-md-6">
+                    <!-- general form elements -->
+                    <div class="card card-primary">
+
+                        <!-- /.card -->
+                        <!-- general form elements -->
+                        <div class="card card-primary">
+                            <div class="card-header">
+                                <h3 class="card-title">Thông tin quân nhân</h3>
+                            </div>
+                            <!-- /.card-header -->
+                            <div class="card-body">
+                                <form method="post" action="/TieuDoan/AddQNd_buton_click">
+                                    <div class="form-group">
+                                        <label for="exampleInputBorder">Họ tên quân nhân <code></code></label>
+                                        <input type="text" class="form-control form-control-border" id="input_tenQN" name="input_tenQN" placeholder="Họ và tên">
+                                    </div>
+
+                                    <h4>Thông tin chi tiết</h4>
+                                    <div class="form-group">
+                                        <label for="exampleSelectBorder"> Cấp bậc <code></code></label>
+                                        <input type="text" class="form-control form-control-border" id="input_capbac" name="input_capbac" placeholder="Cấp bậc">
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="exampleSelectBorderWidth2">Chức vụ <code></code></label>
+                                        <select class="form-control" id="select_chucvu" name="select_chucvu">
+
+                                            @foreach (var item in listchuvu)
+                                            {
+                                                <option value=@item.MaChucVu>@item.TenChucVu</option>
+
+                                            }
+                                        </select>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="exampleSelectRounded0">Đơn vị <code></code></label>
+                                        <select class="form-control" id="select_donvi" name="select_donvi">
+                                            @foreach (var item in listdonvi)
+                                            {
+                                                <option value=@item.MaDonVi>@item.TenDonVi</option>
+
+                                            }
+                                        </select>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="exampleSelectRounded0">Loại quân nhân <code></code></label>
+                                        <select class="form-control" id="select_loaiQN" name="select_loaiQN">
+                                            @foreach (var item in listloaiQN)
+                                            {
+                                                <option value=@item.MaLoai>@item.TenLoai</option>
+
+                                            }
+                                        </select>
+                                    </div>
+                                    <div class="card-footer">
+                                        <button type="submit" style="width:330px" class="btn btn-primary">Thêm</button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+
+
+
+
+
+                <div class="row">
+                    <!-- left column -->
+                    <div class="col-md-50" style="width: 430px">
+                        <!-- general form elements -->
+                        <div class="card card-primary">
+
+                            <!-- /.card -->
+                            <!-- general form elements -->
+                            <div class="card card-primary">
+                                <div class="card-header">
+                                    <h3 class="card-title">Thông tin đơn vị</h3>
+                                </div>
+                                <!-- /.card-header -->
+                                <div class="card-body">
+                                    <h4>Tiểu đoàn 1</h4>
+                                    <div class="form-group">
+                                        <label for="exampleInputBorder">Phiên hiệu đơn vị <code></code></label>
+                                        <input type="text" class="form-control form-control-border" id="exampleInputBorder" placeholder="Phiên hiệu">
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label for="exampleInputBorder">Mã đơn vị <code></code></label>
+                                        <input type="text" class="form-control form-control-border" id="exampleInputBorder" placeholder="Mã đơn vị">
+                                    </div>
+
+
+                                    <div class="card-footer">
+                                        <button type="submit" class="btn btn-primary">Thêm phiên hiệu</button>
+                                        <button type="submit" class="btn btn-danger">Xóa phiên hiệu</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+
+
+                </div>
+
+
+
+            </div>
+
+
+
+        </div>
+
+
+
+    </section>
+
+</div>
