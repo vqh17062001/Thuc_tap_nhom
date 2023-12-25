@@ -18,7 +18,11 @@ namespace WebForQLQS.Controllers
         static string searchvalue;
 
 
-
+        /// <summary>
+        /// /////
+        /// </summary>
+        /// <param name="page"></param>
+        /// <returns></returns>
 
         public IActionResult viewTieuDoan(int page = 1)
 
