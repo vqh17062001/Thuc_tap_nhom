@@ -120,8 +120,8 @@ namespace WebForQLQS.Controllers
 
         [HttpGet]
 
-
-
+     
+        
         public IActionResult linkviewQSDonVid()
         {
 
@@ -156,7 +156,15 @@ namespace WebForQLQS.Controllers
 
         }
 
-
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="input_tenQN"></param>
+        /// <param name="input_capbac"></param>
+        /// <param name="select_chucvu"></param>
+        /// <param name="select_donvi"></param>
+        /// <param name="select_loaiQN"></param>
+        /// <returns></returns>
 
         public IActionResult AddQNd_buton_click(string input_tenQN, string input_capbac, string select_chucvu, string select_donvi, string select_loaiQN)
         {
