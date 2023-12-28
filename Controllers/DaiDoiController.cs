@@ -36,6 +36,7 @@ namespace WebForQLQS.Controllers
             var ten_nguoi_dangnhap = _context.QuanNhans.Find(idtenindaidoi);
 
             ViewData["name"] = ten_nguoi_dangnhap.HoTen;
+            ViewData["id"] = ten_nguoi_dangnhap.MaQuanNhan;
             ///////////
             ///
             string madonvi = null;
@@ -173,7 +174,7 @@ namespace WebForQLQS.Controllers
             var ten_nguoi_dangnhap = _context.QuanNhans.Find(idtenindaidoi);
 
             ViewData["name"] = ten_nguoi_dangnhap.HoTen;
-
+            ViewData["id"] = ten_nguoi_dangnhap.MaQuanNhan;
 
 
 

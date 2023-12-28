@@ -5,6 +5,8 @@
     var donvi = ViewData["ttDonVi"] as List<QuannhanDonvi>;
     var chucvu = ViewData["ttChucVu"] as List<QuannhanChucvu>;
 
+                                    var idFromViewData = ViewData["id"]; 
+                                
     var numofpage = 10;
 
      var numofgroup = ((Model.TotalItems / Model.PageSize) + 1) / numofpage;
@@ -92,75 +94,88 @@
                             }
                             <td><a class=" btn btn-primary" href="@Url.Action("BaovangQNd", new { id = quannhan.MaQuanNhan })">Báo vắng</a></td>
                             <td><a class=" btn btn-primary" href="@Url.Action("ChangeQNd", new { id = quannhan.MaQuanNhan })">Sửa</a></td>
-                            <td><a class=" btn btn-danger" href="@Url.Action("DeleteQNd", new { id = quannhan.MaQuanNhan })">Xóa</a></td>
+
+
+
+                            @if (idFromViewData != quannhan.MaQuanNhan)
+                            {
+                                <td>
+                                    <a class="btn btn-danger delete-btn" href="@Url.Action("DeleteQNd", new { id = quannhan.MaQuanNhan })" data-quannhan-code="@quannhan.HoTen">
+                                        Xóa
+                                    </a>
+                                </td>
+                            }
+                            else
+                            {
+                                <td>
+                                    <a class="btn btn-default delete-btn" href="#" data-quannhan-code="@quannhan.MaQuanNhan">Xóa</a>
+                                </td>
+                            }
+
+
+                       
+
+
+                                
+                            
                         </tr>
                     }
 
                 </tbody>
             </table>
+            </div>
+
+
 
 
             <div class="pagination">
-                @if (Model.CurrentPage == ((Model.TotalItems / Model.PageSize) + 1)) { PagedViewModel<QuanNhan>.currencegroup = numofgroup; }
-
-
+                @if (Model.CurrentPage == ((Model.TotalItems / Model.PageSize) + 1))
+                {
+                    PagedViewModel<QuanNhan>.currencegroup = numofgroup;
+                }
 
                 @if (((Model.TotalItems / Model.PageSize) + 1) < numofpage)
                 {
                     for (int i = 1; i <= (Model.TotalItems / Model.PageSize) + 1; i++)
                     {
-                        <a class="nav-link btn-secondary  " href="@Url.Action("ViewDaiDoi", new { page = i })">@i</a>
-
-
+                        <a class="nav-link btn-secondary @((i == Model.CurrentPage) ? "active" : "")" href="@Url.Action("ViewDaiDoi", new { page = i })">@i</a>
                     }
-
-
-
                 }
                 else
                 {
-
                     if (PagedViewModel<QuanNhan>.currencegroup <= numofgroup && PagedViewModel<QuanNhan>.currencegroup >= 0)
                     {
                         if (PagedViewModel<QuanNhan>.currencegroup != 0)
                         {
-                            <a class="nav-link btn-secondary  " href="/TieuDoan/changecurrencegroup/-1"> previous </a>
+                            <a class="nav-link btn-secondary" href="/TieuDoan/changecurrencegroup/-1">previous</a>
                         }
                         for (int i = 1; i <= numofpage; i++)
                         {
                             if ((PagedViewModel<QuanNhan>.currencegroup * numofpage + i) <= ((Model.TotalItems / Model.PageSize) + 1))
                             {
-                                <a class="nav-link btn-secondary  " href="@Url.Action("ViewDaiDoi", new { page = (PagedViewModel<QuanNhan>.currencegroup*numofpage+i) })">@(PagedViewModel<QuanNhan>.currencegroup * numofpage + i)</a>
+                                <a class="nav-link btn-secondary @(((PagedViewModel<QuanNhan>.currencegroup * numofpage) + i) == Model.CurrentPage ? "active" : "")" href="@Url.Action("ViewDaiDoi", new { page = (PagedViewModel<QuanNhan>.currencegroup * numofpage + i) })">
+                                    @(PagedViewModel<QuanNhan>.currencegroup * numofpage + i)
+                                </a>
                             }
-
                         }
 
                         if (PagedViewModel<QuanNhan>.currencegroup != numofgroup)
                         {
-                            <a class="nav-link btn-secondary  " href="/TieuDoan/changecurrencegroup/1"> next </a>
+                            <a class="nav-link btn-secondary" href="/TieuDoan/changecurrencegroup/1">next</a>
                         }
                     }
                     else if (PagedViewModel<QuanNhan>.currencegroup < 0)
-
-
-                    { PagedViewModel<QuanNhan>.currencegroup = numofgroup; }
-
+                    {
+                        PagedViewModel<QuanNhan>.currencegroup = numofgroup;
+                    }
                 }
 
-
-                <a class="nav-link btn-dark" href="@Url.Action("ViewDaiDoi", new { page = (Model.TotalItems / Model.PageSize) + 1 })">  last(@((Model.TotalItems / Model.PageSize) + 1))   </a> <span class="text-danger nav-link">@Model.CurrentPage/@(Model.TotalItems / Model.PageSize + 1)</span>
-
+                <a class="nav-link btn-dark" href="@Url.Action("ViewDaiDoi", new { page = (Model.TotalItems / Model.PageSize) + 1 })">last(@((Model.TotalItems / Model.PageSize) + 1))</a>
+                <span class="text-danger nav-link">@Model.CurrentPage/@(Model.TotalItems / Model.PageSize + 1)</span>
             </div>
 
-
-        </div>
-        <!-- /.card-body -->
-
-
-    </section>
-</div>
-
-
+            </section>
+            </div>
 
 <script type="text/javascript">
     function updateClock() {
@@ -175,5 +190,32 @@
     // Cập nhật đồng hồ mỗi giây
     setInterval(updateClock, 1000);
 </script>
+
+<script>
+    var idFromViewData = '@ViewData["id"]'; // Assuming the value is a string, adjust as needed
+
+    // Attach click event handler to all elements with class 'delete-btn'
+    document.querySelectorAll('.delete-btn').forEach(function (element) {
+        element.addEventListener('click', function (event) {
+            // Prevent the default action (e.g., following the link)
+            event.preventDefault();
+
+            // Get the quân nhân code from the link
+            var quanNhanCode = event.target.getAttribute('data-quannhan-code');
+
+            // Show a custom alert with quân nhân code and proceed only if the user confirms
+            var isConfirmed = window.confirm('Bạn có muốn xóa quân nhân ' + quanNhanCode + ' không?');
+
+            if (isConfirmed && quanNhanCode !== idFromViewData) {
+                // If confirmed and quân nhân code is not equal to idFromViewData, navigate to the delete action
+                window.location.href = event.target.getAttribute('href');
+            } else if (quanNhanCode === idFromViewData) {
+                // If quân nhân code is equal to idFromViewData, show a message
+                alert('Bạn không thể xóa quân nhân' + quanNhanCode + '.');
+            }
+        });
+    });
+</script>
+
 
 
