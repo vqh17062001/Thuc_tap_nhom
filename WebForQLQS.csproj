@@ -14,6 +14,14 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Include="Views\DaiDoi\changeQNd.cshtml" />
+    <None Include="Views\DaiDoi\Components\viewAddInf\Default.cshtml" />
+    <None Include="Views\DaiDoi\Components\viewBaoCao\Default.cshtml" />
+    <None Include="Views\DaiDoi\Components\viewForAnalyst\Default.cshtml" />
+    <None Include="Views\DaiDoi\Components\viewQSDonVi\Default.cshtml" />
+    <None Include="Views\DaiDoi\detailforanalyst.cshtml" />
+    <None Include="Views\DaiDoi\detailRecordBaoCao.cshtml" />
+    <None Include="Views\DaiDoi\ViewDaiDoi.cshtml" />
     <None Include="wwwroot\frontend\dist\css\adminlte.css.map" />
     <None Include="wwwroot\frontend\dist\css\adminlte.min.css.map" />
     <None Include="wwwroot\frontend\dist\css\alt\adminlte.components.css.map" />

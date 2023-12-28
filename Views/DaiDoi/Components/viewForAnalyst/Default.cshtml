@@ -1,0 +1,90 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+
+    // trang nay de cho viewForAnalyst cccccccccc
+}
+
+
+@model PagedViewModel<WebForQLQS.Models.objforanalyst>;
+<div class="content-wrapper" style="min-height: 1302.32px;">
+    <section class="content">
+        <div class="card-header">
+            <h3 class="card-title">HỌC VIỆN KỸ THUẬT QUÂN SỰ - TIỂU ĐOÀN 1 - @ViewData["phienhieu"] </h3>
+           
+            <div class="card-tools">
+                <div class="input-group input-group-sm" style="width: 250px;">
+                    <form method="post" action="table_searchButtonClickinTHONGKE">
+
+                        <div class="input-group-append">
+                            <input type="text" style="width:200px" name="table_search" class="form-control float-right" placeholder="Nhập ngày">
+
+
+                            <button type="submit" class="btn btn-default">
+                                <i class="fas fa-search"></i>
+                            </button>
+
+                        </div>
+
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-sm-12">
+                <table id="example1" class="table table-striped">
+                    <h4 class="text-danger"> @ViewData["mess"] </h4>
+                    <thead>
+                        <tr>
+                            <th>Ngày  </th>
+                            <th>Tổng quân số </th>
+                            <th> Quân số vắng </th>
+                            <th>Tỉ lệ</th>
+                            <th> </th>
+
+                        </tr>
+                    </thead>
+                    <tbody>
+
+                        @foreach (var item in Model.Items)
+                        {
+                            <tr>
+
+                                @if (item.Ngayvang.HasValue)
+                                {
+                                    <td>@item.Ngayvang.Value.ToString("dd/MM/yyyy") </td>
+                                }
+
+                                <td>@item.TongQS</td>
+                                <td>@item.QSvang</td>
+                                <td>@item.percentage %</td>
+                                <td><a class=" btn btn-primary" href="@Url.Action("detailforanalyst", new { date = item.Ngayvang })">Chi tiết</a></td>
+
+                            </tr>
+
+
+                        }
+
+
+                    </tbody>
+
+                </table>
+
+                <div class="pagination">
+                    @for (int i = 1; i <= (Model.TotalItems / Model.PageSize) + 1; i++)
+                    {
+
+
+                        <a class="btn-navbar  nav-link " href="@Url.Action("linkviewForAnalyst", new { page = i })">@i</a>
+                    }
+                </div>
+
+            </div>
+        </div>
+
+
+    </section>
+
+</div>
