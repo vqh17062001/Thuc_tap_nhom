@@ -21,8 +21,8 @@
         <div class="card-header">
             <h3 class="card-title">HỌC VIỆN KĨ THUẬT QUÂN SỰ - TIỂU ĐOÀN 1 - @ViewData["donvi"] - @Model.TotalItems Quân nhân</h3>
 
-            <div class="card-tools" style="width: 250px">
-                <div class="input-group input-group-sm" style="width: 300px;">
+            <div class="card-tools" style="width: 340px">
+                <div class="input-group input-group-sm" style="width: 350px;">
 
                     <form method="post" action="ViewDaiDoi">
 
@@ -32,10 +32,21 @@
 
                             <!-- Cấp bậc (Rank) search input -->
                             <!-- Cấp bậc (Rank) dropdown list -->
-                            <select name="searchCapBac" id="capbac_search" class="form-control">
+                            <select name="searchCapBac" id="capbac_search" class="form-control ml-2 mr-2">
                                 <option value="" selected>Chọn cấp bậc</option>
-                                <option value="Binh Nhất" selected="@((string)ViewBag.idsearch_capbac == "Binh Nhất")">Binh Nhất</option>
-                                <option value="Binh Nhì" selected="@((string)ViewBag.idsearch_capbac == "Binh Nhì")">Binh Nhì</option>
+                                <option value="Đại tá" selected="@((string)ViewBag.idsearch_capbac == "Đại tá")">Đại tá</option>
+                                <option value="Thượng tá" selected="@((string)ViewBag.idsearch_capbac == "Thượng tá")">Thượng tá</option>
+                                <option value="Trung tá" selected="@((string)ViewBag.idsearch_capbac == "Trung tá")">Trung tá</option>
+                                <option value="Thiếu tá" selected="@((string)ViewBag.idsearch_capbac == "Thiếu tá")">Thiếu tá</option>
+                                <option value="Đại úy" selected="@((string)ViewBag.idsearch_capbac == "Đại úy")">Đại úy</option>
+                                <option value="Thượng úy" selected="@((string)ViewBag.idsearch_capbac == "Thượng úy")">Thượng úy</option>
+                                <option value="Trung úy" selected="@((string)ViewBag.idsearch_capbac == "Trung úy")">Trung úy</option>
+                                <option value="Thiếu úy" selected="@((string)ViewBag.idsearch_capbac == "Thiếu úy")">Thiếu úy</option>
+                                <option value="Thượng sĩ" selected="@((string)ViewBag.idsearch_capbac == "Thượng sĩ")">Thượng sĩ</option>
+                                <option value="Trung sĩ" selected="@((string)ViewBag.idsearch_capbac == "Trung sĩ")">Trung sĩ</option>
+                                <option value="Hạ sĩ" selected="@((string)ViewBag.idsearch_capbac == "Hạ sĩ")">Hạ sĩ</option>
+                                <option value="Binh nhất" selected="@((string)ViewBag.idsearch_capbac == "Binh nhất")">Binh nhất</option>
+                                <option value="Binh nhì" selected="@((string)ViewBag.idsearch_capbac == "Binh nhì")">Binh nhì</option>
                             </select>
 
 
