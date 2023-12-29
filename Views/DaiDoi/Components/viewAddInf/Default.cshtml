@@ -17,17 +17,17 @@
 
 }
 
-<div class="content-wrapper" style="min-height: 1302.32px;">
+<div class="content-wrapper mt-2" style="min-height: 1302.32px;">
 
     <section class="content">
-        <div class="container-fluid">
-            <div class="row">
+  
+          
                 <!-- left column -->
 
 
-                <div class="col-md-6">
+                <div class="col-md-12">
                     <!-- general form elements -->
-                    <div class="card card-primary">
+
 
                         <!-- /.card -->
                         <!-- general form elements -->
@@ -82,32 +82,24 @@
                                             }
                                         </select>
                                     </div>
-                                    <div class="card-footer">
-                                        <button type="submit" style="width:330px" class="btn btn-primary">Thêm</button>
+                                    <div class="card-footer ">
+                                        <button type="submit" style="width:375px" class="btn btn-success mr-1">Thêm</button>
+                            <button type="button" style="width: 375px" class="btn btn-danger" onclick="clearForm()">Xóa</button>
+
                                     </div>
                                 </form>
                             </div>
                         </div>
-                    </div>
                 </div>
-
-
-
-
-
-
-               
-
-
-
-            </div>
-
-
-
-        </div>
-
-
-
     </section>
-
 </div>
+<script>
+    function clearForm() {
+        // Reset the form fields
+        document.getElementById("input_tenQN").value = "";
+        document.getElementById("input_capbac").value = "";
+        document.getElementById("select_chucvu").value = "";
+        document.getElementById("select_donvi").value = "";
+        document.getElementById("select_loaiQN").value = "";
+    }
+</script>

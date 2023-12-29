@@ -23,9 +23,9 @@ namespace WebForQLQS.Controllers
         static string searchvalueindaidoi;
 
 
-        public IActionResult ViewDaiDoi(int page = 1)
+        public IActionResult ViewDaiDoi(int page = 1, string searchTerm = "", string searchCapBac = "")
         {
-           
+          
 
             if (TempData["name"] != null)
             {
@@ -72,6 +72,17 @@ namespace WebForQLQS.Controllers
                 }
             }
 
+            // Apply search filters
+            var searchTermLower = RemoveDiacritics(searchTerm?.ToLower());
+            var searchCapBacLower = RemoveDiacritics(searchCapBac?.ToLower());
+
+            // Filter the list based on search criteria
+            quannhandaidoilist = quannhandaidoilist
+                .Where(qn =>
+                    (string.IsNullOrEmpty(searchTermLower) || RemoveDiacritics(qn.HoTen.ToLower()).Contains(searchTermLower)) &&
+                    (string.IsNullOrEmpty(searchCapBacLower) || RemoveDiacritics(qn.CapBac.ToLower()).Contains(searchCapBacLower)))
+                .ToList();
+
             int pageSize = 10;
             var qn_cvlist = _context.QuannhanChucvus.ToList();
             var pagedItems = quannhandaidoilist.Skip((page - 1) * pageSize).Take(pageSize);
@@ -83,41 +94,16 @@ namespace WebForQLQS.Controllers
                 CurrentPage = page,
                 PageSize = pageSize
             };
+
             datalinkmodel link = new datalinkmodel("viewQSDonVi");
-            ViewBag.idsearch_ten = TempData["idsearch_ten"] as string;
-            ViewBag.idsearch_capbac = TempData["idsearch_capbac"] as string;
+            ViewBag.idsearch_ten = searchTerm;
+            ViewBag.idsearch_capbac = searchCapBac;
 
-            List<QuanNhan> pageitemsearch = new List<QuanNhan>();
-            var searchTermLower = RemoveDiacritics(ViewBag.idsearch_ten?.ToLower());
-            var searchCapBacLower = RemoveDiacritics(ViewBag.idsearch_capbac?.ToLower());
-
-            // Check if both search criteria are empty or null
-            if (string.IsNullOrEmpty(searchTermLower) && string.IsNullOrEmpty(searchCapBacLower))
-            {
-                // If both search criteria are empty or null, display the entire list
-                pageitemsearch = quannhandaidoilist.ToList();
-            }
-            else
-            {
-                // Filter the list based on search criteria
-                pageitemsearch = quannhandaidoilist
-                    .Where(qn =>
-                        (string.IsNullOrEmpty(searchTermLower) || RemoveDiacritics(qn.HoTen.ToLower()).Contains(searchTermLower)) &&
-                        (string.IsNullOrEmpty(searchCapBacLower) || RemoveDiacritics(qn.CapBac.ToLower()).Contains(searchCapBacLower)))
-                    .ToList();
-                pagedItems = pageitemsearch.Skip((page - 1) * pageSize).Take(pageSize);
-                model.Items = pagedItems.ToList();
-                model.TotalItems = pageitemsearch.Count;
-                model.CurrentPage = page;
-                model.PageSize = pageSize;
-            }
-
-            // Apply pagination to the search results
-           
+            // ... (existing code)
 
             ViewBag.linkmodel = link;
-            // Update the model with search results and pagination information
-           
+
+            // ... (existing code)
 
             ViewData["ttDonVi"] = qn_dvlist;
             ViewData["ttChucVu"] = qn_cvlist;
@@ -125,8 +111,10 @@ namespace WebForQLQS.Controllers
             ViewData["donvi"] = madonvi;
 
             ViewData["ativeinviewDaiDoi"] = "active";
+
             return View(model);
         }
+
 
 
         // Helper method to remove diacritics from a string
