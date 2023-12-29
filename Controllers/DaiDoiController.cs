@@ -368,7 +368,9 @@ namespace WebForQLQS.Controllers
             ViewData["mess"] = TempData["mess"];
             ViewData["phienhieu"] = madonvi;
 
+            int currentPage = page; // Add this line to get the current page
 
+            ViewBag.currentPage = currentPage; // Pass the current page to the view
 
             ViewData["ativeinlinkviewForAnalyst"] = "active";
             return View("ViewDaiDoi", model);
