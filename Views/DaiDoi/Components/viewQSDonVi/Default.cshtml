@@ -24,22 +24,31 @@
             <div class="card-tools" style="width: 250px">
                 <div class="input-group input-group-sm" style="width: 300px;">
 
-                    <form method="post" action="table_searchButtonClick">
+                    <form method="post" action="ViewDaiDoi">
 
-                        <div class="input-group-append">
+                        <div class="input-group">
                             <!-- Tên (Name) search input -->
-                            <input type="text" name="ten_search" id="ten_search" class="form-control float-right" placeholder="Tìm kiếm theo tên">
+                            <input type="text" name="searchTerm" id="ten_search" class="form-control" placeholder="Tìm kiếm theo tên" value="@ViewBag.idsearch_ten">
 
                             <!-- Cấp bậc (Rank) search input -->
-                            <input type="text" name="capbac_search" id="capbac_search" class="form-control float-right" placeholder="Tìm kiếm theo cấp bậc">
+                            <!-- Cấp bậc (Rank) dropdown list -->
+                            <select name="searchCapBac" id="capbac_search" class="form-control">
+                                <option value="" selected>Chọn cấp bậc</option>
+                                <option value="Binh Nhất" selected="@((string)ViewBag.idsearch_capbac == "Binh Nhất")">Binh Nhất</option>
+                                <option value="Binh Nhì" selected="@((string)ViewBag.idsearch_capbac == "Binh Nhì")">Binh Nhì</option>
+                            </select>
 
-                            <button class="btn btn-default" type="submit">
-                                <i class="fas fa-search"></i>
-                            </button>
+
+                            <div class="input-group-append">
+                                <button class="btn btn-default" type="submit">
+                                    <i class="fas fa-search"></i>
+                                </button>
+                            </div>
                         </div>
 
-
                     </form>
+
+
                 </div>
             </div>
         </div>
@@ -55,7 +64,7 @@
                 <thead>
                     <tr>
 
-                        <th style="width: 40px">STT</th>
+                        <th style="width: 40px">STT</th> 
                         <th style="width: 190px"> HỌ TÊN </th>
                         <th style="width: 100px"> CẤP BẬC </th>
                         <th style="width: 100px"> CHỨC VỤ </th>
@@ -103,7 +112,7 @@
                             {
                                 <td>
                                     <a class="btn btn-danger delete-btn" href="@Url.Action("DeleteQNd", new { id = quannhan.MaQuanNhan })" data-quannhan-code="@quannhan.HoTen">
-                                        Xóa
+                                        Xóa         
                                     </a>
                                 </td>
                             }
@@ -130,51 +139,71 @@
 
 
 
-            <div class="pagination">
-                @if (Model.CurrentPage == ((Model.TotalItems / Model.PageSize) + 1))
+        <div class="pagination">
+            @if (Model.CurrentPage == ((Model.TotalItems / Model.PageSize) + 1))
+            {
+                PagedViewModel<QuanNhan>.currencegroup = numofgroup;
+            }
+
+            @if (((Model.TotalItems / Model.PageSize) + 1) < numofpage)
+            {
+                for (int i = 1; i <= (Model.TotalItems / Model.PageSize) + 1; i++)
+                {
+                    <a class="nav-link btn-secondary @(i == Model.CurrentPage ? "active" : "")"
+                       asp-route-page="@i"
+                       asp-route-searchTerm="@ViewBag.idsearch_ten"
+                       asp-route-searchCapBac="@ViewBag.idsearch_capbac">
+                        @i
+                    </a>
+                }
+            }
+            else
+            {
+                if (PagedViewModel<QuanNhan>.currencegroup <= numofgroup && PagedViewModel<QuanNhan>.currencegroup >= 0)
+                {
+                    if (PagedViewModel<QuanNhan>.currencegroup != 0)
+                    {
+                        <a class="nav-link btn-secondary"
+                           asp-route-page="@(Model.CurrentPage - 1)"
+                           asp-route-searchTerm="@ViewBag.idsearch_ten"
+                           asp-route-searchCapBac="@ViewBag.idsearch_capbac">
+                            previous
+                        </a>
+                    }
+
+                    for (int i = 1; i <= numofpage; i++)
+                    {
+                        if ((PagedViewModel<QuanNhan>.currencegroup * numofpage + i) <= ((Model.TotalItems / Model.PageSize) + 1))
+                        {
+                            <a class="nav-link btn-secondary @(((PagedViewModel<QuanNhan>.currencegroup * numofpage) + i) == Model.CurrentPage ? "active" : "")"
+                               asp-route-page="@(PagedViewModel<QuanNhan>.currencegroup * numofpage + i)"
+                               asp-route-searchTerm="@ViewBag.idsearch_ten"
+                               asp-route-searchCapBac="@ViewBag.idsearch_capbac">
+                                @(PagedViewModel<QuanNhan>.currencegroup * numofpage + i)
+                            </a>
+                        }
+                    }
+
+                    if (PagedViewModel<QuanNhan>.currencegroup != numofgroup)
+                    {
+                        <a class="nav-link btn-secondary"
+                           asp-route-page="@(Model.CurrentPage + 1)"
+                           asp-route-searchTerm="@ViewBag.idsearch_ten"
+                           asp-route-searchCapBac="@ViewBag.idsearch_capbac">
+                            next
+                        </a>
+                    }
+                }
+                else if (PagedViewModel<QuanNhan>.currencegroup < 0)
                 {
                     PagedViewModel<QuanNhan>.currencegroup = numofgroup;
                 }
+            }
 
-                @if (((Model.TotalItems / Model.PageSize) + 1) < numofpage)
-                {
-                    for (int i = 1; i <= (Model.TotalItems / Model.PageSize) + 1; i++)
-                    {
-                        <a class="nav-link btn-secondary @((i == Model.CurrentPage) ? "active" : "")" href="@Url.Action("ViewDaiDoi", new { page = i })">@i</a>
-                    }
-                }
-                else
-                {
-                    if (PagedViewModel<QuanNhan>.currencegroup <= numofgroup && PagedViewModel<QuanNhan>.currencegroup >= 0)
-                    {
-                        if (PagedViewModel<QuanNhan>.currencegroup != 0)
-                        {
-                            <a class="nav-link btn-secondary" href="/TieuDoan/changecurrencegroup/-1">previous</a>
-                        }
-                        for (int i = 1; i <= numofpage; i++)
-                        {
-                            if ((PagedViewModel<QuanNhan>.currencegroup * numofpage + i) <= ((Model.TotalItems / Model.PageSize) + 1))
-                            {
-                                <a class="nav-link btn-secondary @(((PagedViewModel<QuanNhan>.currencegroup * numofpage) + i) == Model.CurrentPage ? "active" : "")" href="@Url.Action("ViewDaiDoi", new { page = (PagedViewModel<QuanNhan>.currencegroup * numofpage + i) })">
-                                    @(PagedViewModel<QuanNhan>.currencegroup * numofpage + i)
-                                </a>
-                            }
-                        }
+            <span class="text-danger nav-link">@Model.CurrentPage/@(Model.TotalItems / Model.PageSize + 1)</span>
+        </div>
 
-                        if (PagedViewModel<QuanNhan>.currencegroup != numofgroup)
-                        {
-                            <a class="nav-link btn-secondary" href="/TieuDoan/changecurrencegroup/1">next</a>
-                        }
-                    }
-                    else if (PagedViewModel<QuanNhan>.currencegroup < 0)
-                    {
-                        PagedViewModel<QuanNhan>.currencegroup = numofgroup;
-                    }
-                }
 
-               
-                <span class="text-danger nav-link">@Model.CurrentPage/@(Model.TotalItems / Model.PageSize + 1)</span>
-            </div>
 
             </section>
             </div>
