@@ -27,18 +27,17 @@
                     <form method="post" action="table_searchButtonClick">
 
                         <div class="input-group-append">
-                            <input type="text" name="table_search" id="table_search" class="form-control float-right" placeholder="tên hoặc cấp bậc ">
+                            <!-- Tên (Name) search input -->
+                            <input type="text" name="ten_search" id="ten_search" class="form-control float-right" placeholder="Tìm kiếm theo tên">
 
-
-
+                            <!-- Cấp bậc (Rank) search input -->
+                            <input type="text" name="capbac_search" id="capbac_search" class="form-control float-right" placeholder="Tìm kiếm theo cấp bậc">
 
                             <button class="btn btn-default" type="submit">
                                 <i class="fas fa-search"></i>
                             </button>
-
-
-
                         </div>
+
 
                     </form>
                 </div>
@@ -56,8 +55,9 @@
                 <thead>
                     <tr>
 
-                        <th style="width: 10px">MÃ QN</th>
-                        <th style="width: 290px"> HỌ TÊN </th>
+                        <th style="width: 40px">STT</th>
+                        <th style="width: 190px"> HỌ TÊN </th>
+                        <th style="width: 100px"> CẤP BẬC </th>
                         <th style="width: 100px"> CHỨC VỤ </th>
                         <th style="width: 100px"> ĐƠN VỊ </th>
 
@@ -68,12 +68,12 @@
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach (var quannhan in Model.Items)
+                    @foreach (var (quannhan, index) in Model.Items.Select((value, i) => (value, i + (Model.CurrentPage - 1) * Model.PageSize)))
                     {
                         <tr>
-                            <td>@quannhan.MaQuanNhan</td>
+                            <td>@(index + 1)</td>
                             <td>@quannhan.HoTen</td>
-
+                            <td>@quannhan.CapBac</td>
                             @foreach (var item in chucvu)
                             {
                                 if (item.MaQuanNhan == quannhan.MaQuanNhan)
@@ -92,7 +92,9 @@
                                 }
 
                             }
+
                             <td><a class=" btn btn-primary" href="@Url.Action("BaovangQNd", new { id = quannhan.MaQuanNhan })">Báo vắng</a></td>
+                  
                             <td><a class=" btn btn-primary" href="@Url.Action("ChangeQNd", new { id = quannhan.MaQuanNhan })">Sửa</a></td>
 
 
@@ -170,7 +172,7 @@
                     }
                 }
 
-                <a class="nav-link btn-dark" href="@Url.Action("ViewDaiDoi", new { page = (Model.TotalItems / Model.PageSize) + 1 })">last(@((Model.TotalItems / Model.PageSize) + 1))</a>
+               
                 <span class="text-danger nav-link">@Model.CurrentPage/@(Model.TotalItems / Model.PageSize + 1)</span>
             </div>
 

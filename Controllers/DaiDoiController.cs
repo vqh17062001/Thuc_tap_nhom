@@ -3,6 +3,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
+using System.Globalization;
+using System.Text;
 using WebForQLQS.Data;
 using WebForQLQS.Models;
 
@@ -23,24 +25,20 @@ namespace WebForQLQS.Controllers
 
         public IActionResult ViewDaiDoi(int page = 1)
         {
-            //////////////
-            ///
-            datalinkmodel link = new datalinkmodel("viewQSDonVi");
+           
 
-            ViewBag.linkmodel = link;
             if (TempData["name"] != null)
             {
-
                 idtenindaidoi = TempData["name"] as string;
             }
-            var ten_nguoi_dangnhap = _context.QuanNhans.Find(idtenindaidoi);
 
+            var ten_nguoi_dangnhap = _context.QuanNhans.Find(idtenindaidoi);
             ViewData["name"] = ten_nguoi_dangnhap.HoTen;
             ViewData["id"] = ten_nguoi_dangnhap.MaQuanNhan;
-            ///////////
-            ///
+
             string madonvi = null;
             var qn_dvlist = _context.QuannhanDonvis.ToList();
+
             foreach (var qndv in qn_dvlist)
             {
                 if (qndv.MaQuanNhan == idtenindaidoi)
@@ -48,46 +46,34 @@ namespace WebForQLQS.Controllers
                     madonvi = qndv.MaDonVi;
                     break;
                 }
-
             }
 
             List<string> listmaquannhan = new List<string>();
 
             foreach (var qndv in qn_dvlist)
             {
-
                 if (qndv.MaDonVi == madonvi)
                 {
                     listmaquannhan.Add(qndv.MaQuanNhan);
                 }
-
             }
+
             var quannhanlistfull = _context.QuanNhans.ToList();
             List<QuanNhan> quannhandaidoilist = new List<QuanNhan>();
+
             foreach (var maqn in listmaquannhan)
             {
-
                 foreach (var qn in quannhanlistfull)
                 {
                     if (qn.MaQuanNhan == maqn)
                     {
                         quannhandaidoilist.Add(qn);
-
-
                     }
-
                 }
-
             }
 
-
-            ///////
             int pageSize = 10;
-
-
-
             var qn_cvlist = _context.QuannhanChucvus.ToList();
-
             var pagedItems = quannhandaidoilist.Skip((page - 1) * pageSize).Take(pageSize);
 
             var model = new PagedViewModel<QuanNhan>
@@ -97,66 +83,75 @@ namespace WebForQLQS.Controllers
                 CurrentPage = page,
                 PageSize = pageSize
             };
+            datalinkmodel link = new datalinkmodel("viewQSDonVi");
+            ViewBag.idsearch_ten = TempData["idsearch_ten"] as string;
+            ViewBag.idsearch_capbac = TempData["idsearch_capbac"] as string;
 
-
-
-
-
-
-            ///////////
-            ///
-
-            var item = TempData["idsearch"] as string;
-
-            if (item != null)
-            {
-                searchvalueindaidoi = item;
-
-            }
             List<QuanNhan> pageitemsearch = new List<QuanNhan>();
+            var searchTermLower = RemoveDiacritics(ViewBag.idsearch_ten?.ToLower());
+            var searchCapBacLower = RemoveDiacritics(ViewBag.idsearch_capbac?.ToLower());
 
-            if (searchvalueindaidoi != null)
+            // Check if both search criteria are empty or null
+            if (string.IsNullOrEmpty(searchTermLower) && string.IsNullOrEmpty(searchCapBacLower))
             {
-                foreach (var qn in quannhandaidoilist)
-
-
-                {
-
-
-
-                    if (qn.CapBac.Contains(searchvalueindaidoi) || qn.HoTen.Contains(searchvalueindaidoi))
-                    {
-                        pageitemsearch.Add(qn);
-
-                    }
-
-                }
+                // If both search criteria are empty or null, display the entire list
+                pageitemsearch = quannhandaidoilist.ToList();
+            }
+            else
+            {
+                // Filter the list based on search criteria
+                pageitemsearch = quannhandaidoilist
+                    .Where(qn =>
+                        (string.IsNullOrEmpty(searchTermLower) || RemoveDiacritics(qn.HoTen.ToLower()).Contains(searchTermLower)) &&
+                        (string.IsNullOrEmpty(searchCapBacLower) || RemoveDiacritics(qn.CapBac.ToLower()).Contains(searchCapBacLower)))
+                    .ToList();
                 pagedItems = pageitemsearch.Skip((page - 1) * pageSize).Take(pageSize);
-
                 model.Items = pagedItems.ToList();
                 model.TotalItems = pageitemsearch.Count;
                 model.CurrentPage = page;
                 model.PageSize = pageSize;
             }
 
+            // Apply pagination to the search results
+           
 
-
-
+            ViewBag.linkmodel = link;
+            // Update the model with search results and pagination information
+           
 
             ViewData["ttDonVi"] = qn_dvlist;
             ViewData["ttChucVu"] = qn_cvlist;
             ViewData["mess"] = TempData["mess"];
             ViewData["donvi"] = madonvi;
-            ////////
-            ///
-
-
-
 
             ViewData["ativeinviewDaiDoi"] = "active";
             return View(model);
         }
 
+
+        // Helper method to remove diacritics from a string
+        public static string RemoveDiacritics(string input)
+        {
+            if (input == null)
+            {
+                // Handle the case where input is null
+                return string.Empty; // or null, depending on your requirement
+            }
+
+            var normalizedString = input.Normalize(NormalizationForm.FormD);
+            var stringBuilder = new StringBuilder();
+
+            foreach (var c in normalizedString)
+            {
+                var unicodeCategory = CharUnicodeInfo.GetUnicodeCategory(c);
+                if (unicodeCategory != UnicodeCategory.NonSpacingMark)
+                {
+                    stringBuilder.Append(c);
+                }
+            }
+
+            return stringBuilder.ToString().Normalize(NormalizationForm.FormC);
+        }
 
 
 
@@ -948,13 +943,10 @@ namespace WebForQLQS.Controllers
 
         [HttpPost]
 
-        public IActionResult table_searchButtonClick(string table_search)
+        public IActionResult table_searchButtonClick(string ten_search, string capbac_search)
         {
-
-
-
-
-            TempData["idsearch"] = table_search;
+            TempData["idsearch_ten"] = ten_search;
+            TempData["idsearch_capbac"] = capbac_search;
             return RedirectToAction("ViewDaiDoi", "DaiDoi");
         }
 
@@ -981,6 +973,6 @@ namespace WebForQLQS.Controllers
             return RedirectToAction("detailforanalyst", "DaiDoi");
 
         }
-
+     
     }
 }
