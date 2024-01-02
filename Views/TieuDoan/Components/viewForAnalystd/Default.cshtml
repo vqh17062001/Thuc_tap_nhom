@@ -1,12 +1,18 @@
-﻿@*
-    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-*@
-@{
+﻿@model PagedViewModel<WebForQLQS.Models.objforanalyst>;
 
-    // trang nay de cho viewForAnalyst
-}
+<!-- jQuery -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
-@model PagedViewModel<WebForQLQS.Models.objforanalyst>;
+<!-- Kendo UI -->
+@* <link rel="stylesheet" href="https://kendo.cdn.telerik.com/2022.2.615/styles/kendo.common.min.css" />
+<link rel="stylesheet" href="https://kendo.cdn.telerik.com/2022.2.615/styles/kendo.default.min.css" />
+<script src="https://kendo.cdn.telerik.com/2022.2.615/js/kendo.all.min.js"></script>
+ *@
+<!-- Thư viện Chart.js -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
+
 <div class="content-wrapper" style="min-height: 1302.32px;">
     <section class="content">
         <div class="card-header">
@@ -15,17 +21,12 @@
             <div class="card-tools">
                 <div class="input-group input-group-sm" style="width: 250px;">
                     <form method="post" action="table_searchButtonClickinTHONGKE">
-
                         <div class="input-group-append">
                             <input type="text" style="width:200px" name="table_search" class="form-control float-right" placeholder="Nhập ngày">
-
-
                             <button type="submit" class="btn btn-default">
                                 <i class="fas fa-search"></i>
                             </button>
-
                         </div>
-
                     </form>
                 </div>
             </div>
@@ -37,56 +38,112 @@
                     <h4 class="text-danger"> @ViewData["mess"] </h4>
                     <thead>
                         <tr>
-                            <th>Ngày  </th>
-                            <th>Tổng quân số </th>
-                            <th> Quân số vắng </th>
+                            <th>Ngày</th>
+                            <th>Tổng quân số</th>
+                            <th>Quân số vắng</th>
                             <th>Tỉ lệ</th>
-                            <th> </th>
-
+                            <th></th>
                         </tr>
                     </thead>
                     <tbody>
-
                         @foreach (var item in Model.Items)
                         {
                             <tr>
-
                                 @if (item.Ngayvang.HasValue)
                                 {
-                                    <td>@item.Ngayvang.Value.ToString("dd/MM/yyyy") </td>
+                                    <td>@item.Ngayvang.Value.ToString("dd/MM/yyyy")</td>
                                 }
 
                                 <td>@item.TongQS</td>
                                 <td>@item.QSvang</td>
                                 <td>@item.percentage %</td>
-                                <td><a class=" btn btn-primary" href="@Url.Action("detailforanalyst", new { date = item.Ngayvang })">Chi tiết</a></td>
-
+                                <td><a class="btn btn-primary" href="@Url.Action("detailforanalyst", new { date = item.Ngayvang })">Chi tiết</a></td>
                             </tr>
-
-
                         }
-
-
                     </tbody>
-
                 </table>
-
-                <div class="pagination">
-                    @for (int i = 1; i <= (Model.TotalItems / Model.PageSize) + 1; i++)
-                    {
-
-
-                        <a class="btn-navbar  nav-link " href="@Url.Action("linkviewForAnalystd", new { page = i })">@i</a>
-                    }
-                </div>
-
             </div>
         </div>
 
-
+        <div class="row">
+            <div class="col-sm-12">
+                <!-- Thẻ div để chứa biểu đồ -->
+                <canvas id="myChart"></canvas>
+            </div>
+        </div>
     </section>
-
 </div>
 
+<script>
+    $(document).ready(function () {
+        var data = @Html.Raw(Json.Serialize(Model.Items.OrderBy(item => item.Ngayvang).ToList()));
+
+        var labels = data.map(function (item) {
+            var ngayvangDate = new Date(item.ngayvang);
+            return ngayvangDate.toLocaleDateString("en-GB");
+        });
 
 
+
+
+
+
+
+        var totalPercentage = 100;
+
+        var chartData = {
+            labels: labels,
+            datasets: [{
+                label: "Tỉ lệ (%)",
+                data: data.map(function (item) {
+                    return (item.percentage / totalPercentage) * 100;
+                }),
+                backgroundColor: [
+                    'rgba(255, 99, 132, 0.2)',
+                    'rgba(54, 162, 235, 0.2)',
+                    'rgba(255, 206, 86, 0.2)'
+                ],
+                borderColor: [
+                    'rgba(255, 99, 132, 1)',
+                    'rgba(54, 162, 235, 1)',
+                    'rgba(255, 206, 86, 1)'
+                ],
+                borderWidth: 1
+            }]
+        };
+
+        var ctx = document.getElementById('myChart').getContext('2d');
+
+        var myChart = new Chart(ctx, {
+            type: 'bar',
+            data: chartData,
+            options: {
+                plugins: {
+                    datalabels: {
+                        anchor: 'end',
+                        align: 'end',
+                        formatter: function (value, context) {
+                            // Hiển thị ngày tháng tương ứng nếu có giá trị và không phải là rỗng
+                            var dateLabel = labels[context.dataIndex] !== "" ? labels[context.dataIndex] : "";
+                            var percentageLabel = value.toFixed(2) + "%";
+                            return dateLabel + "\n" + percentageLabel;
+                        },
+                        color: 'black', // Màu sắc của nhãn
+                        font: {
+                            weight: 'bold' // Trọng lượng của font
+                        }
+                    }
+                },
+                scales: {
+                    x: {
+                        beginAtZero: true
+                    },
+                    y: {
+                        beginAtZero: true,
+                        max: 100
+                    }
+                }
+            }
+        });
+    });
+</script>

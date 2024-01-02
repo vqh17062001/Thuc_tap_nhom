@@ -14,7 +14,8 @@
     // trang nay de cho viewQSDonVi
 }
 
-
+<link href="~/frontend/dist/css/adminlte.min.css" rel="stylesheet" />
+<link href="~/frontend/dist/css/adminlte.css" rel="stylesheet" />
 
 
 @model PagedViewModel<WebForQLQS.Models.QuanNhan>;
@@ -31,7 +32,7 @@
                     <form method="post" action="table_searchButtonClick">
 
                         <div class="input-group-append">
-                            <input type="text" name="table_search" id="table_search" class="form-control float-right" placeholder="tên, cấp bậc hoặc đơn vị ">
+                            <input style="width:220px;" type="text" name="table_search" id="table_search" class="form-control float-right" placeholder="tên, cấp bậc hoặc đơn vị ">
 
 
 
@@ -189,3 +190,5 @@
     // Cập nhật đồng hồ mỗi giây
     setInterval(updateClock, 1000);
 </script>
+<link href="~/frontend/dist/css/adminlte.min.css" rel="stylesheet" />
+<link href="~/frontend/dist/css/adminlte.css" rel="stylesheet" />
