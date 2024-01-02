@@ -83,7 +83,7 @@ namespace WebForQLQS.Controllers
                     (string.IsNullOrEmpty(searchCapBacLower) || RemoveDiacritics(qn.CapBac.ToLower()).Contains(searchCapBacLower)))
                 .ToList();
 
-            int pageSize = 9;
+            int pageSize = 8;
             var qn_cvlist = _context.QuannhanChucvus.ToList();
             var pagedItems = quannhandaidoilist.Skip((page - 1) * pageSize).Take(pageSize);
 
@@ -786,43 +786,47 @@ namespace WebForQLQS.Controllers
         {
             using (var context = new HtqlqsContext())
             {
-                var bcqsngay = context.BaoCaoQsNgays.AsNoTracking().ToList();
                 var idNguoiduyet = context.QuanNhans.Find(idtenindaidoi);
 
-                bool anyReportedAbsent = false;
+                var reportedAbsentIds = new List<string>();
+                var existingReports = context.BaoCaoQsNgays
+                    .Where(r => ids.Contains(r.MaQuanNhan) && r.NgayVang == DateTime.Now.Date)
+                    .Select(r => r.MaQuanNhan)
+                    .ToList();
 
                 foreach (var id in ids)
                 {
-                    var recordToAddBCQSNgay = context.QuanNhans.Find(id);
-
-                    var recordBaoCao = new BaoCaoQsNgay
+                    if (!existingReports.Contains(id))
                     {
-                        MaBc = Guid.NewGuid().ToString().Substring(0, 20), // Take the first 20 characters
-                        MaQuanNhan = recordToAddBCQSNgay.MaQuanNhan,
-                        NgayVang = DateTime.Now.Date,
-                        NguoiDuyet = idNguoiduyet.MaQuanNhan
-                    };
+                        var recordToAddBCQSNgay = context.QuanNhans.Find(id);
 
-                    // Check if the entity is already in the context
-                    var existingEntity = context.BaoCaoQsNgays.Local
-                        .SingleOrDefault(e => e.MaQuanNhan == recordBaoCao.MaQuanNhan && e.NgayVang == recordBaoCao.NgayVang);
+                        var recordBaoCao = new BaoCaoQsNgay
+                        {
+                            MaBc = Guid.NewGuid().ToString().Substring(0, 20),
+                            MaQuanNhan = recordToAddBCQSNgay.MaQuanNhan,
+                            NgayVang = DateTime.Now.Date,
+                            NguoiDuyet = idNguoiduyet.MaQuanNhan
+                        };
 
-                    if (existingEntity == null)
-                    {
-                        // If not in the context, attach and set state to Added
                         context.BaoCaoQsNgays.Add(recordBaoCao);
                         context.Entry(recordBaoCao).State = EntityState.Added;
                         context.SaveChanges();
                     }
                     else
                     {
-                        anyReportedAbsent = true;
+                        reportedAbsentIds.Add(id);
                     }
                 }
 
-                if (anyReportedAbsent)
+                // Fetch names based on IDs
+                var reportedAbsentNames = context.QuanNhans
+                    .Where(q => reportedAbsentIds.Contains(q.MaQuanNhan))
+                    .Select(q => q.HoTen)
+                    .ToList();
+
+                if (reportedAbsentNames.Any())
                 {
-                    TempData["mess"] = "Ít nhất một quân nhân đã được báo vắng trong ngày!";
+                    TempData["mess"] = $"Quân nhân với tên: {string.Join(", ", reportedAbsentNames)} đã được báo vắng trong ngày!";
                 }
                 else
                 {
@@ -832,43 +836,54 @@ namespace WebForQLQS.Controllers
 
             return RedirectToAction("ViewDaiDoi", "DaiDoi");
         }
+
+
         public IActionResult BaoDuQNd()
         {
             using (var context = new HtqlqsContext())
             {
                 var idNguoiduyet = context.QuanNhans.Find(idtenindaidoi);
-
                 var currentDay = DateTime.Now.Date;
 
-                // Delete all reports for the current day
-                var reportsToDelete = context.BaoCaoQsNgays.Where(r => r.NgayVang == currentDay).ToList();
-                context.BaoCaoQsNgays.RemoveRange(reportsToDelete);
-                context.SaveChanges();
+                // Kiểm tra xem đã có báo cáo cho ngày và mã nhất định chưa
+                var existingReport = context.LsQsVangs
+                    .FirstOrDefault(r => r.NgayVang == currentDay && r.NguoiDuyet == idNguoiduyet.MaQuanNhan);
 
-                var recordBaoCao = new BaoCaoQsNgay();
+                if (existingReport != null)
+                {
+                    TempData["mess"] = "Đã báo đủ!";
+                }
+                else
+                {
+                    // Xóa tất cả báo cáo cho ngày hiện tại
+                    var reportsToDelete = context.BaoCaoQsNgays.Where(r => r.NgayVang == currentDay).ToList();
+                    context.BaoCaoQsNgays.RemoveRange(reportsToDelete);
 
-                recordBaoCao.MaBc = "trust";
-                recordBaoCao.NgayVang = currentDay;
-                recordBaoCao.NguoiDuyet = idNguoiduyet.MaQuanNhan;
+                    // Thêm mới báo cáo
+                    var recordBaoCao = new BaoCaoQsNgay();
+                    recordBaoCao.MaBc = "trust";
+                    recordBaoCao.NgayVang = currentDay;
+                    recordBaoCao.NguoiDuyet = idNguoiduyet.MaQuanNhan;
+                    context.BaoCaoQsNgays.Add(recordBaoCao);
 
-                // Add the new report
-                context.BaoCaoQsNgays.Add(recordBaoCao);
-                context.SaveChanges();
+                    // Thêm mới lịch sử quân số vắng
+                    var recordBaoCaoQuanSo = new LsQsVang();
+                    recordBaoCaoQuanSo.MaLs = "trust";
+                    recordBaoCaoQuanSo.NgayVang = currentDay;
+                    recordBaoCaoQuanSo.NgayDuyet = currentDay;
+                    recordBaoCaoQuanSo.NguoiDuyet = idNguoiduyet.MaQuanNhan;
+                    context.LsQsVangs.Add(recordBaoCaoQuanSo);
 
-                var recordBaoCaoQuanSo = new LsQsVang();
-                recordBaoCaoQuanSo.MaLs = "trust";
-                recordBaoCaoQuanSo.NgayVang = currentDay;
-                recordBaoCaoQuanSo.NgayDuyet = currentDay;
-                recordBaoCaoQuanSo.NguoiDuyet = idNguoiduyet.MaQuanNhan;
+                    // Lưu thay đổi vào cơ sở dữ liệu
+                    context.SaveChanges();
 
-                context.LsQsVangs.Add(recordBaoCaoQuanSo);
-                context.SaveChanges();
-
-                TempData["mess"] = "Quân số không vắng!";
+                    TempData["mess"] = "Quân số không vắng!";
+                }
             }
 
             return RedirectToAction("ViewDaiDoi", "DaiDoi");
         }
+
 
 
 
@@ -883,7 +898,7 @@ namespace WebForQLQS.Controllers
         {
             var tt_quannhan = _context.QuanNhans.Find(id);
 
-
+         
             ///////////// khối truyền thông tin chức vụ 
             var tt_qncv = _context.QuannhanChucvus.ToList();
 

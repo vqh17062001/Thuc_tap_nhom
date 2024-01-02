@@ -24,4 +24,5 @@ public partial class QuanNhan
     public virtual ICollection<QuannhanDonvi> QuannhanDonvis { get; set; } = new List<QuannhanDonvi>();
 
     public virtual ICollection<ThongBaoTrongNgay> ThongBaoTrongNgays { get; set; } = new List<ThongBaoTrongNgay>();
+
 }

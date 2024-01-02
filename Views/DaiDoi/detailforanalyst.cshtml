@@ -106,11 +106,11 @@
 @model PagedViewModel<WebForQLQS.Models.LsQsVang>;
 <div class="content-wrapper">
     <!-- general form elements -->
-    <div class="card card-primary">
+    <div class="card card-primary mt-2 ml-2">
 
         <!-- /.card -->
         <!-- general form elements -->
-        <div class="card card-primary">
+      
             <div class="card-header">
                 <span> Thông tin quân số vắng ngày: @date </span>
 
@@ -120,10 +120,10 @@
                         <input type="text" style="width:205px" name="table_search" class="form-control float-right" placeholder="Nhập tên hoặc lý do">
 
 
-                        <button type="submit" class="btn btn-default">
+                        <button type="submit" class="btn btn-default ml-2">
                             <i class="fas fa-search"></i>
                         </button>
-                        <a class="btn-group btn btn-danger" href="/DaiDoi/linkviewForAnalyst"> Trở lại </a>
+                       
 
                     </div>
 
@@ -195,10 +195,11 @@
                     }
                 </div>
             </div>
+           
 
 
 
-
-        </div>
+      
     </div>
+    <a class="btn-group btn btn-danger ml-2" href="/DaiDoi/linkviewForAnalyst"> Trở lại </a>
 </div>
