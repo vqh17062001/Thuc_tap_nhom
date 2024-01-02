@@ -37,28 +37,49 @@
                             </div>
                             <!-- /.card-header -->
                             <div class="card-body">
-                                <form method="post" action="/DaiDoi/AddQNd_buton_click">
-                                    <div class="form-group">
-                                        <label for="exampleInputBorder">Họ tên quân nhân <code></code></label>
-                                        <input type="text" class="form-control form-control-border" id="input_tenQN" name="input_tenQN" placeholder="Họ và tên">
-                                    </div>
+                    <form method="post" action="/DaiDoi/AddQNd_buton_click" onsubmit="return validateForm()">
+                        <div class="form-group">
+                            <label for="exampleInputBorder">Họ tên quân nhân <code></code></label>
+                            <input type="text" class="form-control" id="input_tenQN" name="input_tenQN" placeholder="Họ và tên" required>
+                            <!-- Thêm cảnh báo lỗi -->
+                            <div class="invalid-feedback">Vui lòng nhập họ tên quân nhân.</div>
+                        </div>
 
                                     <h4>Thông tin chi tiết</h4>
-                                    <div class="form-group">
-                                        <label for="exampleSelectBorder"> Cấp bậc <code></code></label>
-                                        <input type="text" class="form-control form-control-border" id="input_capbac" name="input_capbac" placeholder="Cấp bậc">
-                                    </div>
-                                    <div class="form-group">
-                                        <label for="exampleSelectBorderWidth2">Chức vụ <code></code></label>
-                                        <select class="form-control" id="select_chucvu" name="select_chucvu">
+                        <div class="form-group">
+                            <label for="exampleSelectBorder">Cấp bậc <code></code></label>
+                            <select class="form-control" id="input_capbac" name="input_capbac" required>
+                                <option value="">--Chọn cấp bậc--</option>
+                                <option value="Đại tá">Đại tá</option>
+                                <option value="Thượng tá">Thượng tá</option>
+                                <option value="Trung tá">Trung tá</option>
+                                <option value="Thiếu tá">Thiếu tá</option>
+                                <option value="Đại úy">Đại úy</option>
+                                <option value="Thượng úy">Thượng úy</option>
+                                <option value="Trung úy">Trung úy</option>
+                                <option value="Thiếu úy">Thiếu úy</option>
+                                <option value="Thượng sĩ">Thượng sĩ</option>
+                                <option value="Trung sĩ">Trung sĩ</option>
+                                <option value="Hạ sĩ">Hạ sĩ</option>
+                                <option value="Binh nhất">Binh nhất</option>
+                                <option value="Binh nhì">Binh nhì</option>
+                            </select>
+                            <div class="invalid-feedback">Vui lòng chọn cấp bậc.</div>
+                        </div>
 
-                                            @foreach (var item in listchuvu)
-                                            {
-                                                <option value=@item.MaChucVu>@item.TenChucVu</option>
+                        <div class="form-group">
+                            <label for="exampleSelectBorderWidth2">Chức vụ <code></code></label>
+                            <select class="form-control" id="select_chucvu" name="select_chucvu" required>
+                                <option value="" disabled selected>--Chọn chức vụ--</option>
+                                @foreach (var item in listchuvu)
+                                {
+                                    <option value="@item.MaChucVu">@item.TenChucVu</option>
+                                }
+                            </select>
+                            <!-- Thêm cảnh báo lỗi -->
+                            <div class="invalid-feedback">Vui lòng chọn chức vụ.</div>
+                        </div>
 
-                                            }
-                                        </select>
-                                    </div>
                                     <div class="form-group">
                                         <label for="exampleSelectRounded0">Đơn vị <code></code></label>
                                         <select class="form-control" id="select_donvi" name="select_donvi">
@@ -74,13 +95,15 @@
                                     </div>
                                     <div class="form-group">
                                         <label for="exampleSelectRounded0">Loại quân nhân <code></code></label>
-                                        <select class="form-control" id="select_loaiQN" name="select_loaiQN">
+                            <select class="form-control" id="select_loaiQN" name="select_loaiQN" required>
+                                <option value="">--Chọn loại quân nhân--</option>
                                             @foreach (var item in listloaiQN)
                                             {
                                                 <option value=@item.MaLoai>@item.TenLoai</option>
 
                                             }
                                         </select>
+                            <div class="invalid-feedback">Vui lòng chọn loại quân nhân.</div>
                                     </div>
                                     <div class="card-footer ">
                                         <button type="submit" style="width:375px" class="btn btn-success mr-1">Thêm</button>
@@ -103,3 +126,4 @@
         document.getElementById("select_loaiQN").value = "";
     }
 </script>
+

@@ -83,7 +83,7 @@ namespace WebForQLQS.Controllers
                     (string.IsNullOrEmpty(searchCapBacLower) || RemoveDiacritics(qn.CapBac.ToLower()).Contains(searchCapBacLower)))
                 .ToList();
 
-            int pageSize = 10;
+            int pageSize = 9;
             var qn_cvlist = _context.QuannhanChucvus.ToList();
             var pagedItems = quannhandaidoilist.Skip((page - 1) * pageSize).Take(pageSize);
 
@@ -261,7 +261,7 @@ namespace WebForQLQS.Controllers
             else
             {
                 TempData["mess"] = "Thêm thông tin thất bại!";
-                return RedirectToAction("ViewDaiDoi", "DaiDoi");
+                return RedirectToAction("linkviewAddInf", "DaiDoi");
 
 
             }
@@ -782,6 +782,97 @@ namespace WebForQLQS.Controllers
             return RedirectToAction("ViewDaiDoi", "DaiDoi");
 
         }
+        public IActionResult BaoVangNhieuNguoi(List<string> ids)
+        {
+            using (var context = new HtqlqsContext())
+            {
+                var bcqsngay = context.BaoCaoQsNgays.AsNoTracking().ToList();
+                var idNguoiduyet = context.QuanNhans.Find(idtenindaidoi);
+
+                bool anyReportedAbsent = false;
+
+                foreach (var id in ids)
+                {
+                    var recordToAddBCQSNgay = context.QuanNhans.Find(id);
+
+                    var recordBaoCao = new BaoCaoQsNgay
+                    {
+                        MaBc = Guid.NewGuid().ToString().Substring(0, 20), // Take the first 20 characters
+                        MaQuanNhan = recordToAddBCQSNgay.MaQuanNhan,
+                        NgayVang = DateTime.Now.Date,
+                        NguoiDuyet = idNguoiduyet.MaQuanNhan
+                    };
+
+                    // Check if the entity is already in the context
+                    var existingEntity = context.BaoCaoQsNgays.Local
+                        .SingleOrDefault(e => e.MaQuanNhan == recordBaoCao.MaQuanNhan && e.NgayVang == recordBaoCao.NgayVang);
+
+                    if (existingEntity == null)
+                    {
+                        // If not in the context, attach and set state to Added
+                        context.BaoCaoQsNgays.Add(recordBaoCao);
+                        context.Entry(recordBaoCao).State = EntityState.Added;
+                        context.SaveChanges();
+                    }
+                    else
+                    {
+                        anyReportedAbsent = true;
+                    }
+                }
+
+                if (anyReportedAbsent)
+                {
+                    TempData["mess"] = "Ít nhất một quân nhân đã được báo vắng trong ngày!";
+                }
+                else
+                {
+                    TempData["mess"] = "Báo vắng thành công!";
+                }
+            }
+
+            return RedirectToAction("ViewDaiDoi", "DaiDoi");
+        }
+        public IActionResult BaoDuQNd()
+        {
+            using (var context = new HtqlqsContext())
+            {
+                var idNguoiduyet = context.QuanNhans.Find(idtenindaidoi);
+
+                var currentDay = DateTime.Now.Date;
+
+                // Delete all reports for the current day
+                var reportsToDelete = context.BaoCaoQsNgays.Where(r => r.NgayVang == currentDay).ToList();
+                context.BaoCaoQsNgays.RemoveRange(reportsToDelete);
+                context.SaveChanges();
+
+                var recordBaoCao = new BaoCaoQsNgay();
+
+                recordBaoCao.MaBc = "trust";
+                recordBaoCao.NgayVang = currentDay;
+                recordBaoCao.NguoiDuyet = idNguoiduyet.MaQuanNhan;
+
+                // Add the new report
+                context.BaoCaoQsNgays.Add(recordBaoCao);
+                context.SaveChanges();
+
+                var recordBaoCaoQuanSo = new LsQsVang();
+                recordBaoCaoQuanSo.MaLs = "trust";
+                recordBaoCaoQuanSo.NgayVang = currentDay;
+                recordBaoCaoQuanSo.NgayDuyet = currentDay;
+                recordBaoCaoQuanSo.NguoiDuyet = idNguoiduyet.MaQuanNhan;
+
+                context.LsQsVangs.Add(recordBaoCaoQuanSo);
+                context.SaveChanges();
+
+                TempData["mess"] = "Quân số không vắng!";
+            }
+
+            return RedirectToAction("ViewDaiDoi", "DaiDoi");
+        }
+
+
+
+
 
 
 
