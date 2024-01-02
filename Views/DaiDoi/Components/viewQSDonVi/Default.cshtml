@@ -193,7 +193,7 @@
                 </div>
             </div>
         </section>
-           
+
 
 
         <div class="pagination">
@@ -202,23 +202,19 @@
                 PagedViewModel<QuanNhan>.currencegroup = numofgroup;
             }
 
-            @if (((Model.TotalItems / Model.PageSize) + 1) <= numofpage)
+            @for (int i = 1; i <= (Model.TotalItems / Model.PageSize) ; i++)
             {
-                for (int i = 1; i <= (Model.TotalItems / Model.PageSize) + 1; i++)
-                {
-                    <a class="nav-link btn-secondary @(i == Model.CurrentPage ? "active" : "")"
-                       asp-route-page="@i"
-                       asp-route-searchTerm="@ViewBag.idsearch_ten"
-                       asp-route-searchCapBac="@ViewBag.idsearch_capbac">
-                        @i
-                    </a>
-                }
+                <a class="nav-link btn-secondary @(i == Model.CurrentPage ? "active" : "")"
+                   asp-route-page="@i"
+                   asp-route-searchTerm="@ViewBag.idsearch_ten"
+                   asp-route-searchCapBac="@ViewBag.idsearch_capbac">
+                    @i
+                </a>
             }
 
-               
-
-            <span class="text-danger nav-link">@Model.CurrentPage/@(Model.TotalItems / Model.PageSize + 1)</span>
+            <span class="text-danger nav-link">@Model.CurrentPage/@(Model.TotalItems / Model.PageSize)</span>
         </div>
+
 
 
 
